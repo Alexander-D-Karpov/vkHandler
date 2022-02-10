@@ -1,0 +1,77 @@
+8215
+2021-12-27 19:31:47,875 (__init__.py:694 MainThread) ERROR - TeleBot: "A request to the Telegram API was unsuccessful. Error code: 409. Description: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running"
+2021-12-30 01:10:33,119 (__init__.py:694 MainThread) ERROR - TeleBot: "A request to the Telegram API was unsuccessful. Error code: 502. Description: Bad Gateway"
+2021-12-30 18:37:13,750 (__init__.py:694 MainThread) ERROR - TeleBot: "A request to the Telegram API was unsuccessful. Error code: 502. Description: Bad Gateway"
+2022-01-15 10:52:25,238 (__init__.py:694 MainThread) ERROR - TeleBot: "A request to the Telegram API was unsuccessful. Error code: 409. Description: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running"
+2022-01-31 21:06:32,393 (__init__.py:694 MainThread) ERROR - TeleBot: "A request to the Telegram API was unsuccessful. Error code: 502. Description: Bad Gateway"
+Traceback (most recent call last):
+  File "/usr/lib/python3/dist-packages/urllib3/connectionpool.py", line 387, in _make_request
+    six.raise_from(e, None)
+  File "<string>", line 3, in raise_from
+  File "/usr/lib/python3/dist-packages/urllib3/connectionpool.py", line 383, in _make_request
+    httplib_response = conn.getresponse()
+  File "/usr/lib/python3.6/http/client.py", line 1377, in getresponse
+    response.begin()
+  File "/usr/lib/python3.6/http/client.py", line 320, in begin
+    version, status, reason = self._read_status()
+  File "/usr/lib/python3.6/http/client.py", line 281, in _read_status
+    line = str(self.fp.readline(_MAXLINE + 1), "iso-8859-1")
+  File "/usr/lib/python3.6/socket.py", line 586, in readinto
+    return self._sock.recv_into(b)
+  File "/usr/lib/python3.6/ssl.py", line 1012, in recv_into
+    return self.read(nbytes, buffer)
+  File "/usr/lib/python3.6/ssl.py", line 874, in read
+    return self._sslobj.read(len, buffer)
+  File "/usr/lib/python3.6/ssl.py", line 631, in read
+    v = self._sslobj.read(len, buffer)
+socket.timeout: The read operation timed out
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/lib/python3/dist-packages/requests/adapters.py", line 440, in send
+    timeout=timeout
+  File "/usr/lib/python3/dist-packages/urllib3/connectionpool.py", line 639, in urlopen
+    _stacktrace=sys.exc_info()[2])
+  File "/usr/lib/python3/dist-packages/urllib3/util/retry.py", line 367, in increment
+    raise six.reraise(type(error), error, _stacktrace)
+  File "/usr/lib/python3/dist-packages/six.py", line 693, in reraise
+    raise value
+  File "/usr/lib/python3/dist-packages/urllib3/connectionpool.py", line 601, in urlopen
+    chunked=chunked)
+  File "/usr/lib/python3/dist-packages/urllib3/connectionpool.py", line 389, in _make_request
+    self._raise_timeout(err=e, url=url, timeout_value=read_timeout)
+  File "/usr/lib/python3/dist-packages/urllib3/connectionpool.py", line 309, in _raise_timeout
+    raise ReadTimeoutError(self, url, "Read timed out. (read timeout=%s)" % timeout_value)
+urllib3.exceptions.ReadTimeoutError: HTTPSConnectionPool(host='api.telegram.org', port=443): Read timed out. (read timeout=25)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "bot.py", line 73, in <module>
+    bot.polling()
+  File "/usr/local/lib/python3.6/dist-packages/telebot/__init__.py", line 664, in polling
+    self.__threaded_polling(non_stop, interval, timeout, long_polling_timeout, allowed_updates)
+  File "/usr/local/lib/python3.6/dist-packages/telebot/__init__.py", line 726, in __threaded_polling
+    raise e
+  File "/usr/local/lib/python3.6/dist-packages/telebot/__init__.py", line 685, in __threaded_polling
+    polling_thread.raise_exceptions()
+  File "/usr/local/lib/python3.6/dist-packages/telebot/util.py", line 105, in raise_exceptions
+    raise self.exception_info
+  File "/usr/local/lib/python3.6/dist-packages/telebot/util.py", line 87, in run
+    task(*args, **kwargs)
+  File "/usr/local/lib/python3.6/dist-packages/telebot/__init__.py", line 413, in __retrieve_updates
+    timeout=timeout, long_polling_timeout=long_polling_timeout)
+  File "/usr/local/lib/python3.6/dist-packages/telebot/__init__.py", line 391, in get_updates
+    json_updates = apihelper.get_updates(self.token, offset, limit, timeout, allowed_updates, long_polling_timeout)
+  File "/usr/local/lib/python3.6/dist-packages/telebot/apihelper.py", line 324, in get_updates
+    return _make_request(token, method_url, params=payload)
+  File "/usr/local/lib/python3.6/dist-packages/telebot/apihelper.py", line 153, in _make_request
+    timeout=(connect_timeout, read_timeout), proxies=proxy)
+  File "/usr/lib/python3/dist-packages/requests/sessions.py", line 520, in request
+    resp = self.send(prep, **send_kwargs)
+  File "/usr/lib/python3/dist-packages/requests/sessions.py", line 630, in send
+    r = adapter.send(request, **kwargs)
+  File "/usr/lib/python3/dist-packages/requests/adapters.py", line 521, in send
+    raise ReadTimeout(e, request=request)
+requests.exceptions.ReadTimeout: HTTPSConnectionPool(host='api.telegram.org', port=443): Read timed out. (read timeout=25)
