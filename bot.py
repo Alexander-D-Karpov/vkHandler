@@ -34,13 +34,13 @@ def _get_inline_tags(uuid: int) -> types.InlineKeyboardMarkup:
     text_and_data = []
     for tag in Tag.objects.all():
         if UserTag.objects.filter(user__uuid=uuid, tag=tag).exists():
-            text_and_data.append(("✅ "+tag.name, tag.name))
+            text_and_data.append(("✅ " + tag.name, tag.name))
         else:
             text_and_data.append((tag.name, tag.name))
 
-
     for i in range(0, len(text_and_data), 3):
-        dat = (types.InlineKeyboardButton(text, callback_data=tag_cb.new(tg=data)) for text, data in text_and_data[i:i+3])
+        dat = (types.InlineKeyboardButton(text, callback_data=tag_cb.new(tg=data)) for text, data in
+               text_and_data[i:i + 3])
         keyboard_markup.row(*dat)
     return keyboard_markup
 
@@ -51,17 +51,17 @@ def _get_user(uuid: int) -> User:
 
 @dp.message_handler(commands=['start'])
 async def init(message: types.Message):
-    user = await sync_to_async(User.objects.get_or_create, thread_sensitive=True) \
+    await sync_to_async(User.objects.get_or_create, thread_sensitive=True) \
         (uuid=message.chat.id, username=message.chat.username)
     await message.reply(f"Hi, @{message.chat.username}")
 
 
 @dp.message_handler(commands=['tags'])
 async def init(message: types.Message):
-    await message.reply("kjlkjl", reply_markup=await _get_inline_tags(uuid=message.chat.id))
+    await message.reply("Подписаться на тэги", reply_markup=await _get_inline_tags(uuid=message.chat.id))
 
 
-@dp.callback_query_handler(tag_cb.filter(tg=_get_tags()))
+@dp.callback_query_handler(tag_cb.filter(tg=await _get_tags()))
 async def callback_tag_action(query: types.CallbackQuery, callback_data: typing.Dict[str, str]):
     await query.answer()
     tag = callback_data['tg']
