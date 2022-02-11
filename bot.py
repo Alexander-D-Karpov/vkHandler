@@ -39,14 +39,27 @@ def _get_inline_tags(uuid: int) -> types.InlineKeyboardMarkup:
             text_and_data.append((tag.name, tag.name))
 
     for i in range(0, len(text_and_data), 3):
-        dat = (types.InlineKeyboardButton(text, callback_data=tag_cb.new(tg=data)) for text, data in
-               text_and_data[i:i + 3])
+        dat = []
+        for text, data in text_and_data[i:i + 3]:
+            call = tag_cb.new(tg=data)
+            dat.append(types.InlineKeyboardButton(text, callback_data=call))
         keyboard_markup.row(*dat)
     return keyboard_markup
 
 
+@database_sync_to_async
 def _get_user(uuid: int) -> User:
     return User.objects.get(uuid=uuid)
+
+
+@database_sync_to_async
+def _create_or_delete_user_tag(uuid: int, tag: str) -> None:
+    user = User.objects.get(uuid=uuid)
+    tag = Tag.objects.get(name=tag)
+    try:
+        UserTag.objects.get(user=user, tag=tag).delete()
+    except UserTag.DoesNotExist:
+        UserTag.objects.create(user=user, tag=tag)
 
 
 @dp.message_handler(commands=['start'])
@@ -61,12 +74,18 @@ async def init(message: types.Message):
     await message.reply("Подписаться на тэги", reply_markup=await _get_inline_tags(uuid=message.chat.id))
 
 
-@dp.callback_query_handler(tag_cb.filter(tg=await _get_tags()))
+@dp.callback_query_handler(tag_cb.filter(tg=['gdfguh', 'regergijoerg', 'wrgerghujer']))
 async def callback_tag_action(query: types.CallbackQuery, callback_data: typing.Dict[str, str]):
+    data = callback_data["tg"]
     await query.answer()
-    tag = callback_data['tg']
-    print(tag)
+    await _create_or_delete_user_tag(query.from_user.id, data)
 
+    await bot.edit_message_text(
+        "Подписаться на тэги",
+        query.from_user.id,
+        query.message.message_id,
+        reply_markup=await _get_inline_tags(uuid=query.message.chat.id)
+    )
 
 @dp.errors_handler(exception=MessageNotModified)  # handle the cases when this exception raises
 async def message_not_modified_handler(update, error):
