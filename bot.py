@@ -1,6 +1,6 @@
 import os
 import typing
-
+import sqlite3
 import django
 from asgiref.sync import sync_to_async
 from channels.db import database_sync_to_async
@@ -11,7 +11,6 @@ django.setup()
 from aiogram import Bot, Dispatcher, executor, types
 from aiogram.utils.exceptions import MessageNotModified
 from aiogram.utils.callback_data import CallbackData
-
 from tg_bot.models import UserTag
 from tg_bot.models import User
 from callback.models import Tag
@@ -23,9 +22,13 @@ dp = Dispatcher(bot)
 tag_cb = CallbackData('tag', 'tg')
 
 
-@database_sync_to_async
 def _get_tags():
-    return Tag.objects.values_list('tags')
+    con = sqlite3.connect('db.sqlite3')
+    cur = con.cursor()
+    re = []
+    for row in cur.execute('SELECT name FROM callback_tag'):
+        re.append(row[0])
+    return re
 
 
 @database_sync_to_async
@@ -47,7 +50,6 @@ def _get_inline_tags(uuid: int) -> types.InlineKeyboardMarkup:
     return keyboard_markup
 
 
-@database_sync_to_async
 def _get_user(uuid: int) -> User:
     return User.objects.get(uuid=uuid)
 
@@ -74,11 +76,12 @@ async def init(message: types.Message):
     await message.reply("Подписаться на тэги", reply_markup=await _get_inline_tags(uuid=message.chat.id))
 
 
-@dp.callback_query_handler(tag_cb.filter(tg=['gdfguh', 'regergijoerg', 'wrgerghujer']))
+@dp.callback_query_handler(tag_cb.filter(tg=_get_tags()))
 async def callback_tag_action(query: types.CallbackQuery, callback_data: typing.Dict[str, str]):
-    data = callback_data["tg"]
     await query.answer()
-    await _create_or_delete_user_tag(query.from_user.id, data)
+    tag = callback_data['tg']
+
+    await _create_or_delete_user_tag(query.from_user.id, tag)
 
     await bot.edit_message_text(
         "Подписаться на тэги",
@@ -86,6 +89,7 @@ async def callback_tag_action(query: types.CallbackQuery, callback_data: typing.
         query.message.message_id,
         reply_markup=await _get_inline_tags(uuid=query.message.chat.id)
     )
+
 
 @dp.errors_handler(exception=MessageNotModified)  # handle the cases when this exception raises
 async def message_not_modified_handler(update, error):
