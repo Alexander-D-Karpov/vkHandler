@@ -6,7 +6,7 @@ class Post(models.Model):
     event_id = models.CharField(max_length=100, unique=True)
 
     def __str__(self):
-        return self.text
+        return self.text[:100]
 
 
 class Tag(models.Model):
