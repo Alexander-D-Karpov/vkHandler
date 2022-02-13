@@ -7,7 +7,6 @@ def get_tags(body: list[str]) -> list[str]:
         all_tags[tag] = tag.tags.split(" ")
     tags = []
     for line in body:
-        print(line)
         for word in line.split(' '):
             if word and word[0] == "#":
                 for tag in all_tags:

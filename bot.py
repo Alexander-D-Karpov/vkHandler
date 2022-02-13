@@ -50,6 +50,7 @@ def _get_inline_tags(uuid: int) -> types.InlineKeyboardMarkup:
     return keyboard_markup
 
 
+@database_sync_to_async
 def _get_user(uuid: int) -> User:
     return User.objects.get(uuid=uuid)
 
