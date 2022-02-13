@@ -5,6 +5,9 @@ from .models import Post
 from .serializers import PostSerializer
 from rest_framework import mixins
 from rest_framework import generics
+from secrets import compare_digest
+
+from .services.prepare_post import prepare_post
 
 secret = "8a1442ec76a9571c8f58e3e24616d9440"
 
@@ -15,14 +18,12 @@ class PostList(mixins.ListModelMixin,
     queryset = Post.objects.all()
     serializer_class = PostSerializer
 
-    def get(self, request, *args, **kwargs):
-        return self.list(request, *args, **kwargs)
-
     def post(self, request, *args, **kwargs):
         if request.data['type'] == "confirmation":
             return HttpResponse('dafbfb3c', content_type="application/json")
 
-        elif request.data['type'] == "wall_post_new" and request.data['secret'] == secret \
+        elif request.data['type'] == "wall_post_new" and compare_digest(request.data['secret'], secret) \
                 and not Post.objects.filter(event_id=request.data['event_id']).exists():
-            return self.create(request, *args, **kwargs)
+            prepare_post(request.data)
+            return Response("OK")
         return Response("event already exists or key is not correct")

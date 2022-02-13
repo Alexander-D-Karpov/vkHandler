@@ -1,8 +1,6 @@
-from .models import Post
 from rest_framework import serializers
 
 
-class PostSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Post
-        fields = ['object', 'event_id']
+class PostSerializer(serializers.Serializer):
+    object = serializers.JSONField()
+    event_id = serializers.CharField()
