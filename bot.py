@@ -1,5 +1,4 @@
 import os
-import typing
 import sqlite3
 import django
 from asgiref.sync import sync_to_async
@@ -77,19 +76,24 @@ async def init(message: types.Message):
     await message.reply("Подписаться на тэги", reply_markup=await _get_inline_tags(uuid=message.chat.id))
 
 
-@dp.callback_query_handler(tag_cb.filter(tg=_get_tags()))
-async def callback_tag_action(query: types.CallbackQuery, callback_data: typing.Dict[str, str]):
+@dp.callback_query_handler(lambda call: True)
+async def callback_action(query: types.CallbackQuery):
     await query.answer()
-    tag = callback_data['tg']
+    data = query.data.split(":")
+    if data[0] == "tag":
+        tag = data[1]
 
-    await _create_or_delete_user_tag(query.from_user.id, tag)
+        await _create_or_delete_user_tag(query.from_user.id, tag)
 
-    await bot.edit_message_text(
-        "Подписаться на тэги",
-        query.from_user.id,
-        query.message.message_id,
-        reply_markup=await _get_inline_tags(uuid=query.message.chat.id)
-    )
+        await bot.edit_message_text(
+            "Подписаться на тэги",
+            query.from_user.id,
+            query.message.message_id,
+            reply_markup=await _get_inline_tags(uuid=query.message.chat.id)
+        )
+    elif data[0] == "post":
+        post_id = int(data[1])
+
 
 
 @dp.errors_handler(exception=MessageNotModified)  # handle the cases when this exception raises
