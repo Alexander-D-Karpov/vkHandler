@@ -4,7 +4,7 @@ from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
 from callback.models import Post, PostTag
 from tg_bot.models import UserTag
 
-API_TOKEN = '5048852247:AAE8g6zVHc229FBQ72zjM4baNJynOqullfA'
+API_TOKEN = "5048852247:AAE8g6zVHc229FBQ72zjM4baNJynOqullfA"
 bot = telebot.TeleBot(API_TOKEN)
 
 
@@ -18,7 +18,9 @@ def _gen_markup(data):
 def send_at_all(post: Post):
     markup = _gen_markup(post.id)
     users = []
-    for user in UserTag.objects.filter(tag__in=[x.tag for x in PostTag.objects.filter(post=post)]):
+    for user in UserTag.objects.filter(
+        tag__in=[x.tag for x in PostTag.objects.filter(post=post)]
+    ):
         u = user.user.uuid
         if u not in users:
             users.append(u)

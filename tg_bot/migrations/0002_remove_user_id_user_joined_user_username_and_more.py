@@ -8,38 +8,58 @@ import django.utils.timezone
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('callback', '0002_tag_remove_post_group_id_remove_post_type_and_more'),
-        ('tg_bot', '0001_initial'),
+        ("callback", "0002_tag_remove_post_group_id_remove_post_type_and_more"),
+        ("tg_bot", "0001_initial"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='user',
-            name='id',
+            model_name="user",
+            name="id",
         ),
         migrations.AddField(
-            model_name='user',
-            name='joined',
-            field=models.DateField(auto_now_add=True, default=django.utils.timezone.now),
+            model_name="user",
+            name="joined",
+            field=models.DateField(
+                auto_now_add=True, default=django.utils.timezone.now
+            ),
             preserve_default=False,
         ),
         migrations.AddField(
-            model_name='user',
-            name='username',
-            field=models.CharField(default='asdfsdf', max_length=100),
+            model_name="user",
+            name="username",
+            field=models.CharField(default="asdfsdf", max_length=100),
             preserve_default=False,
         ),
         migrations.AlterField(
-            model_name='user',
-            name='uuid',
+            model_name="user",
+            name="uuid",
             field=models.IntegerField(primary_key=True, serialize=False),
         ),
         migrations.CreateModel(
-            name='UserTag',
+            name="UserTag",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('tag', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='callback.tag')),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='tg_bot.user')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "tag",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="callback.tag"
+                    ),
+                ),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="tg_bot.user"
+                    ),
+                ),
             ],
         ),
     ]
