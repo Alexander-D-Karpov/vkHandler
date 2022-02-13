@@ -12,9 +12,9 @@ from .services.prepare_post import prepare_post
 secret = "8a1442ec76a9571c8f58e3e24616d9440"
 
 
-class PostList(mixins.ListModelMixin,
-               mixins.CreateModelMixin,
-               generics.GenericAPIView):
+class PostCallback(mixins.ListModelMixin,
+                   mixins.CreateModelMixin,
+                   generics.GenericAPIView):
     queryset = Post.objects.all()
     serializer_class = PostSerializer
 
