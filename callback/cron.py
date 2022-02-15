@@ -1,7 +1,4 @@
 import telebot
-
-from callback.models import Post
-from callback.services.send_at_all import send_at_all
 import kronos
 import datetime
 
@@ -13,8 +10,12 @@ bot = telebot.TeleBot(API_TOKEN)
 
 @kronos.register('30 8 * * *')
 def send_post_cron():
+    users = {}
     for attend in UserAttend.objects.all():
-        print(attend.post.date.strftime('%Y-%m-%d'))
-        print(datetime.date.today().strftime('%Y-%m-%d'))
-        if attend.post.date.strftime('%Y-%m-%d') == datetime.date.today().strftime('%Y-%m-%d'):
-            bot.send_message(attend.user.uuid, attend.post.text)
+        if attend.post.date and attend.post.date.strftime('%Y-%m-%d') == datetime.date.today().strftime('%Y-%m-%d'):
+            if attend.user.uuid not in users:
+                users[attend.user.uuid] = "Доброе утро!\nНапоминаем что сегодня пройдет:\n"
+            users[attend.user.uuid] += attend.post.text[:50] + "... " + attend.post.link + "\n\n"
+
+    for user in users:
+        bot.send_message(user, users[user])
