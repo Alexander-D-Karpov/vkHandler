@@ -34,7 +34,16 @@ def _get_tags():
 
 @database_sync_to_async
 def _get_upcoming_posts():
-    return [x for x in Post.objects.all() if x.date and (datetime.tim(x.date.strftime('%Y-%m-%d')) >= datetime.date(datetime.date.today()))]
+    today = datetime.datetime.today()
+    datem = datetime.datetime(today.year, today.month, today.day)
+    posts = [x for x in Post.objects.all() if x.date and
+            datetime.datetime.strptime(x.date.strftime('%Y-%m-%d'), '%Y-%m-%d') >= datem]
+    if not posts:
+        return "Никаких мероприятий не предстоит"
+    text = "Престоящие мероприятия:\n"
+    for post in posts:
+        text += post.text[:200] + ("... " if len(post.text) > 200 else " ") + post.link + "\n\n"
+    return text
 
 
 @database_sync_to_async
@@ -112,11 +121,11 @@ async def init(message: types.Message):
     )
 
 
-#   @dp.message_handler(lambda message: message.text == "Предстоящие мероприятия")
-#async def init(message: types.Message):
-    #await message.reply(
-    #    await _get_upcoming_posts()
-    #)
+@dp.message_handler(lambda message: message.text == "Предстоящие мероприятия")
+async def init(message: types.Message):
+    await message.reply(
+        await _get_upcoming_posts()
+    )
 
 
 @dp.callback_query_handler(lambda call: True)

@@ -15,7 +15,8 @@ def send_post_cron():
         if attend.post.date and attend.post.date.strftime('%Y-%m-%d') == datetime.date.today().strftime('%Y-%m-%d'):
             if attend.user.uuid not in users:
                 users[attend.user.uuid] = "Доброе утро!\nНапоминаем что сегодня пройдет:\n"
-            users[attend.user.uuid] += attend.post.text[:50] + "... " + attend.post.link + "\n\n"
+            users[attend.user.uuid] += attend.post.text[:50] + ("... " if len(attend.post.text) > 50 else " ")\
+                                       + attend.post.link + "\n\n"
 
     for user in users:
         bot.send_message(user, users[user])

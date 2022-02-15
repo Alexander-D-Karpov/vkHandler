@@ -28,4 +28,4 @@ def send_at_all(post: Post):
             users.append(u)
 
     for user in users:
-        bot.send_message(user, post.text[:200] + "... " + post.link, reply_markup=markup)
+        bot.send_message(user, post.text[:200] + ("... " if len(post.text) > 200 else " ") + post.link, reply_markup=markup)
