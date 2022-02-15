@@ -1,3 +1,6 @@
+import re
+
+
 def clean_post(body: list[str]) -> str:
     data = []
     for line in body:

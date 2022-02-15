@@ -16,7 +16,9 @@ def _gen_markup(data):
 
 
 def send_at_all(post: Post):
-    markup = _gen_markup(post.id)
+    markup = None
+    if Post.date:
+        markup = _gen_markup(post.id)
     users = []
     for user in UserTag.objects.filter(
         tag__in=[x.tag for x in PostTag.objects.filter(post=post)]

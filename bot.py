@@ -4,6 +4,7 @@ import django
 from aiogram.types import KeyboardButton, ReplyKeyboardMarkup
 from asgiref.sync import sync_to_async
 from channels.db import database_sync_to_async
+import datetime
 
 os.environ["DJANGO_SETTINGS_MODULE"] = "vkHandler.settings"
 django.setup()
@@ -29,6 +30,11 @@ def _get_tags():
     for row in cur.execute("SELECT name FROM callback_tag"):
         re.append(row[0])
     return re
+
+
+@database_sync_to_async
+def _get_upcoming_posts():
+    return [x for x in Post.objects.all() if x.date and (datetime.tim(x.date.strftime('%Y-%m-%d')) >= datetime.date(datetime.date.today()))]
 
 
 @database_sync_to_async
@@ -87,7 +93,8 @@ def _prepare_user_attend(post_id: int, user_id: int):
 
 
 button1 = KeyboardButton('Тэги')
-keyboard = ReplyKeyboardMarkup(resize_keyboard=True).add(button1)
+button2 = KeyboardButton('Предстоящие мероприятия')
+keyboard = ReplyKeyboardMarkup(resize_keyboard=True).row(button1, button2)
 
 
 @dp.message_handler(commands=["start"])
@@ -103,6 +110,13 @@ async def init(message: types.Message):
     await message.reply(
         "Подписаться на тэги", reply_markup=await _get_inline_tags(uuid=message.chat.id)
     )
+
+
+#   @dp.message_handler(lambda message: message.text == "Предстоящие мероприятия")
+#async def init(message: types.Message):
+    #await message.reply(
+    #    await _get_upcoming_posts()
+    #)
 
 
 @dp.callback_query_handler(lambda call: True)

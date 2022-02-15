@@ -3,6 +3,7 @@ from callback.services.clean_post import clean_post
 from callback.services.get_tags import get_tags
 from callback.services.get_post_body import get_post_body
 from callback.services.send_at_all import send_at_all
+from callback.services.get_date import get_date
 
 
 def prepare_post(post: dict) -> None:
@@ -10,7 +11,8 @@ def prepare_post(post: dict) -> None:
     tags = get_tags(body)
     c_body = clean_post(body)
     url = f"https://vk.com/wall-{post['group_id']}_{post['object']['id']}"
-    o_post = Post.objects.create(text=c_body, event_id=post["event_id"], link=url)
+    date = get_date(body)
+    o_post = Post.objects.create(text=c_body, event_id=post["event_id"], link=url, date=date)
     for tag in tags:
         PostTag.objects.create(post=o_post, tag=tag)
     send_at_all(o_post)
