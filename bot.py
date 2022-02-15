@@ -1,6 +1,7 @@
 import os
 import sqlite3
 import django
+from aiogram.types import KeyboardButton, ReplyKeyboardMarkup
 from asgiref.sync import sync_to_async
 from channels.db import database_sync_to_async
 
@@ -42,7 +43,7 @@ def _get_inline_tags(uuid: int) -> types.InlineKeyboardMarkup:
 
     for i in range(0, len(text_and_data), 3):
         dat = []
-        for text, data in text_and_data[i : i + 3]:
+        for text, data in text_and_data[i: i + 3]:
             call = tag_cb.new(tg=data)
             dat.append(types.InlineKeyboardButton(text, callback_data=call))
         keyboard_markup.row(*dat)
@@ -85,15 +86,19 @@ def _prepare_user_attend(post_id: int, user_id: int):
     return keyboard_markup
 
 
+button1 = KeyboardButton('Тэги')
+keyboard = ReplyKeyboardMarkup(resize_keyboard=True).add(button1)
+
+
 @dp.message_handler(commands=["start"])
 async def init(message: types.Message):
     await sync_to_async(User.objects.get_or_create, thread_sensitive=True)(
         uuid=message.chat.id, username=message.chat.username
     )
-    await message.reply(f"Hi, @{message.chat.username}")
+    await message.reply(f"Hi, @{message.chat.username}", reply_markup=keyboard)
 
 
-@dp.message_handler(commands=["tags"])
+@dp.message_handler(lambda message: message.text == "Тэги")
 async def init(message: types.Message):
     await message.reply(
         "Подписаться на тэги", reply_markup=await _get_inline_tags(uuid=message.chat.id)
