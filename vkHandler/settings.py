@@ -13,6 +13,8 @@ import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
+from celery.schedules import crontab
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
@@ -37,7 +39,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "django_celery_results",
+    "kronos",
     "rest_framework",
     "callback",
     "tg_bot",
@@ -104,27 +106,13 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-# celery
-CELERY_TIMEZONE = "Europe/Moscow"
-CELERY_TASK_TRACK_STARTED = True
-CELERY_TASK_TIME_LIMIT = 30 * 60
-
-CELERY_RESULT_BACKEND = "django-db"
-CELERY_CACHE_BACKEND = "django-cache"
-
-CACHES = {
-    "default": {
-        "BACKEND": "django.core.cache.backends.db.DatabaseCache",
-        "LOCATION": "cache",
-    }
-}
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.0/topics/i18n/
 
 LANGUAGE_CODE = "en-us"
 
-TIME_ZONE = "UTC"
+TIME_ZONE = "Europe/Moscow"
 
 USE_I18N = True
 
