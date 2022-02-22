@@ -111,13 +111,15 @@ async def init(message: types.Message):
     await sync_to_async(User.objects.get_or_create, thread_sensitive=True)(
         uuid=message.chat.id, username=message.chat.username
     )
-    await message.reply(f"Hi, @{message.chat.username}", reply_markup=keyboard)
+    mes = f"Привет, @{message.chat.username}! \n Я - бот, созданный для тебя. Я собираю информацию из ВК группы школы и сортирую её. \n Ты можешь подписаться на теги по одноимённой кнопке, и когда в группе выложат пост с таким же тегом - я отправлю копию поста в наш чат. Правда, удобно? И не надо листать бесконечную ленту, чтобы найти интересную новость! \n Если ты заинтересовался событием и планируешь прийти - нажми кнопку «участвовать», чтобы я напомнил тебе о мероприятии"
+    await message.reply(mes, reply_markup=keyboard)
 
 
 @dp.message_handler(lambda message: message.text == "Тэги")
 async def init(message: types.Message):
+    mes = "Выбери, что тебе по душе! \n Олимпиады - пока что всё подряд. Если будут новости об НТИ - ты тоже их получишь \n Мастер-классы (куружки, хобби) - урок папье-маше, экскурсия в кружок любителей радиотехники и прочее. \n Спорт - матчи между школами, либо внутришкольные турниры. \n Лекции и гости - более известны, как диалоги без галстуков. К вам приходит эксперт в какой-либо области и ведёт диалог, отвечает на вопросы, рассказывает истории. \n Школьные новости - сюда входят заслуги учеников, результаты олимпиад, а также постановления директора  "
     await message.reply(
-        "Подписаться на тэги", reply_markup=await _get_inline_tags(uuid=message.chat.id)
+        mes, reply_markup=await _get_inline_tags(uuid=message.chat.id)
     )
 
 
